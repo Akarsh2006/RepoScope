@@ -1,5 +1,7 @@
 import { Language } from "../types/language";
+import { defaultConfig } from "../config/defaultConfig";
 
+const IGNORED_LANGUAGES = defaultConfig.ignoredLanguages;
 export interface LanguageStats {
   [language: string]: number;
 }
@@ -24,11 +26,13 @@ export class LanguageAnalyzer {
     );
 
     return Object.entries(stats)
+      .filter(([language]) => !IGNORED_LANGUAGES.includes(language))
       .map(([name, bytes]) => ({
         name,
         bytes,
         percentage: (bytes / totalBytes) * 100,
       }))
-      .sort((a, b) => b.bytes - a.bytes);
+      .sort((a, b) => b.bytes - a.bytes)
+      .slice(0, defaultConfig.topLanguages);
   }
 }
