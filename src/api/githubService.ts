@@ -6,4 +6,19 @@ export class GitHubService {
   async fetchRepositories(username: string) {
     return this.client.getRepositories(username);
   }
+
+  async fetchRepositoryLanguages(owner: string, repository: string) {
+    return this.client.getRepositoryLanguages(owner, repository);
+  }
+  async fetchAllRepositoryLanguages(username: string) {
+  const repositories = await this.fetchRepositories(username);
+
+  const languages = await Promise.all(
+    repositories.map((repository) =>
+      this.fetchRepositoryLanguages(repository.owner.login, repository.name)
+    )
+  );
+  return languages;
+  }
 }
+   

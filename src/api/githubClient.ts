@@ -14,6 +14,14 @@ export class GitHubClient {
       username,
       per_page: 100,
     });
+    return data;
+  }
+
+  async getRepositoryLanguages(owner: string, repository: string) {
+    const { data } = await this.octokit.repos.listLanguages({
+      owner,
+      repo: repository,
+    });
 
     return data;
   }
