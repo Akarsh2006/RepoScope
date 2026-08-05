@@ -31,6 +31,7 @@ export class LanguageAnalyzer {
         name,
         bytes,
         percentage: (bytes / totalBytes) * 100,
+        displayPercentage: `${((bytes / totalBytes) * 100).toFixed(1)}%`,
       }))
       .sort((a, b) => b.bytes - a.bytes)
       .slice(0, defaultConfig.topLanguages);

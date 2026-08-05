@@ -1,16 +1,18 @@
 import { languageColors } from "../../constants/languageColors";
-import { progressBar } from "../components/progressBar";
-import { githubDarkTheme } from "../themes/githubDark";
 import { Language } from "../../types/language";
+import { progressBar } from "../components/progressBar";
+import { Layout } from "../layout";
+import { githubDarkTheme } from "../themes/githubDark";
 
 export class LanguageCard {
   generate(languages: Language[]): string {
-    const cardHeight = Math.max(180, 80 + languages.length * 40);
+    const layout = new Layout();
+    const cardHeight = layout.getCardHeight(languages.length);
 
     return `
-<svg xmlns="http://www.w3.org/2000/svg" width="600" height="${cardHeight}">
+<svg xmlns="http://www.w3.org/2000/svg" width="${layout.cardWidth}" height="${cardHeight}">
   <rect
-    width="600"
+    width="${layout.cardWidth}"
     height="${cardHeight}"
     rx="12"
     fill="${githubDarkTheme.background}"
@@ -18,8 +20,8 @@ export class LanguageCard {
   />
 
   <text
-    x="20"
-    y="40"
+    x="${layout.padding}"
+    y="${layout.titleY}"
     font-size="24"
     font-weight="bold"
     fill="${githubDarkTheme.title}">
@@ -28,28 +30,38 @@ export class LanguageCard {
 
   ${languages
     .map((language, index) => {
-      const y = 80 + index * 40;
+      const y = layout.getLanguageY(index);
 
       return `
         <circle
-          cx="25"
+          cx="${layout.padding + 5}"
           cy="${y - 5}"
-          r="5"
+          r="${layout.languageDotRadius}"
           fill="${languageColors[language.name] ?? "#ffffff"}"
         />
+
         <text
-          x="40"
+          x="${layout.padding + 20}"
           y="${y}"
           font-size="16"
           fill="${githubDarkTheme.text}">
-          ${language.name} (${language.percentage.toFixed(1)}%)
+          ${language.name}
+        </text>
+        
+        <text
+          x="${layout.cardWidth - layout.padding}"
+          y="${y}"
+          font-size="16"
+          text-anchor="end"
+          fill="${githubDarkTheme.text}">
+          ${language.displayPercentage}
         </text>
 
         ${progressBar({
-          x: 20,
+          x: layout.padding,
           y: y + 10,
-          width: 250,
-          height: 8,
+          width: layout.progressBarWidth,
+          height: layout.progressBarHeight,
           percentage: language.percentage,
           color: languageColors[language.name] ?? "#ffffff",
           background: githubDarkTheme.barBackground,
