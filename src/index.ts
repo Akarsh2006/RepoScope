@@ -19,8 +19,12 @@ async function main() {
 const totals = analyzer.aggregate(languages);
 const languageData = analyzer.calculatePercentages(totals);
 
-const svg = card.generate(languageData);
+const summary = analyzer.generateSummary(
+  languages.length,
+  languageData
+);
 
+const svg = card.generate(languageData, summary);
   writeFileSync("output/languages-card.svg", svg);
 
   console.log("✅ Card generated: output/languages-card.svg");

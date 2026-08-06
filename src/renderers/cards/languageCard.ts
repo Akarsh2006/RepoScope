@@ -1,14 +1,28 @@
 import { languageColors } from "../../constants/languageColors";
 import { Language } from "../../types/language";
-import { progressBar } from "../components/progressBar";
 import { Layout } from "../layout";
 import { githubDarkTheme } from "../themes/githubDark";
+import { SvgBuilder } from "../svgBuilder";
+import { distributionBar } from "../components/distributionBar";
+import { LanguageSummary } from "../../types/summary";
 
 export class LanguageCard {
-  generate(languages: Language[]): string {
+  generate(languages: Language[], summary: LanguageSummary): string {
     const layout = new Layout();
     const cardHeight = layout.getCardHeight(languages.length);
+    const builder = new SvgBuilder(layout.cardWidth, cardHeight);
 
+  builder.background(
+    githubDarkTheme.background,
+    githubDarkTheme.border
+  );
+
+  builder.title(
+    "RepoScope",
+    layout.padding,
+    layout.titleY,
+    githubDarkTheme.title
+  );
     return `
 <svg xmlns="http://www.w3.org/2000/svg" width="${layout.cardWidth}" height="${cardHeight}">
   <rect
@@ -30,18 +44,22 @@ export class LanguageCard {
 
   ${languages
     .map((language, index) => {
-      const y = layout.getLanguageY(index);
+      const column = index % layout.legendColumns;
+      const row = Math.floor(index / layout.legendColumns);
+
+      const x = layout.padding + column * layout.legendColumnWidth;
+      const y = layout.getLanguageY(row);
 
       return `
         <circle
-          cx="${layout.padding + 5}"
+          cx="${x + 5}"
           cy="${y - 5}"
           r="${layout.languageDotRadius}"
           fill="${languageColors[language.name] ?? "#ffffff"}"
         />
 
         <text
-          x="${layout.padding + 20}"
+          x="${x + 20}"
           y="${y}"
           font-size="16"
           fill="${githubDarkTheme.text}">
@@ -49,7 +67,7 @@ export class LanguageCard {
         </text>
         
         <text
-          x="${layout.cardWidth - layout.padding}"
+          x="${x + layout.legendColumnWidth - 20}"
           y="${y}"
           font-size="16"
           text-anchor="end"
@@ -57,18 +75,40 @@ export class LanguageCard {
           ${language.displayPercentage}
         </text>
 
-        ${progressBar({
+        ${distributionBar({
           x: layout.padding,
-          y: y + 10,
-          width: layout.progressBarWidth,
-          height: layout.progressBarHeight,
-          percentage: language.percentage,
-          color: languageColors[language.name] ?? "#ffffff",
+          y: 60,
+          width: layout.cardWidth - layout.padding * 2,
+          height: 10,
+          languages,
           background: githubDarkTheme.barBackground,
         })}
       `;
     })
     .join("")}
+      <text
+    x="${layout.padding}"
+    y="${cardHeight - 60}"
+    font-size="14"
+    fill="${githubDarkTheme.text}">
+    Repositories: ${summary.totalRepositories}
+  </text>
+
+  <text
+    x="${layout.padding}"
+    y="${cardHeight - 40}"
+    font-size="14"
+    fill="${githubDarkTheme.text}">
+    Languages: ${summary.totalLanguages}
+  </text>
+
+  <text
+    x="${layout.padding}"
+    y="${cardHeight - 20}"
+    font-size="14"
+    fill="${githubDarkTheme.text}">
+    Top Language: ${summary.topLanguage}
+  </text>
 </svg>
 `;
   }

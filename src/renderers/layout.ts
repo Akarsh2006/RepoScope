@@ -1,16 +1,16 @@
 export class Layout {
   readonly cardWidth = 600;
-
   readonly padding = 20;
-
   readonly titleY = 40;
 
-  readonly languageStartY = 80;
+  readonly languageStartY = 110;
 
   readonly rowHeight = 40;
 
-  readonly progressBarHeight = 8;
+  readonly legendColumns = 2;
+  readonly legendColumnWidth = 280;
 
+  readonly progressBarHeight = 8;
   readonly progressBarWidth = 250;
 
   readonly languageDotRadius = 5;
